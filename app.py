@@ -19,8 +19,6 @@ favorites = db.Table('favorites',
     db.Column('quote_id', db.Integer, db.ForeignKey('quote.id'), primary_key=True)
 )
 
-
-# Modelo de Usuario
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), nullable=False)
@@ -43,7 +41,7 @@ def load_user(user_id):
 def home():
     if current_user.is_authenticated:
         users = User.query.filter(User.id != current_user.id).all()
-        quotes = Quote.query.all()  # Carga todas las citas
+        quotes = Quote.query.all()  
         return render_template("home.html", users=users, quotes=quotes)
     return redirect(url_for('login'))
 
@@ -108,8 +106,6 @@ def contribute():
     if request.method == 'POST':
         author = request.form.get('author')
         text = request.form.get('text')
-        
-        # Aquí deberías incluir las validaciones para 'author' y 'text'
         if len(author) < 3 or len(text) < 10:
             flash('El autor debe tener al menos 3 caracteres y la cita 10.')
             return redirect(url_for('contribute'))
@@ -127,11 +123,9 @@ def contribute():
 def toggle_favorite(quote_id):
     quote = Quote.query.get_or_404(quote_id)
     if quote in current_user.favorite_quotes:
-        # Si la cita ya es favorita, la elimina de los favoritos
         current_user.favorite_quotes.remove(quote)
         flash('Cita eliminada de favoritos.', 'info')
     else:
-        # Si la cita no es favorita, la añade a los favoritos
         current_user.favorite_quotes.append(quote)
         flash('Cita añadida a favoritos.', 'success')
     db.session.commit()
@@ -141,8 +135,8 @@ def toggle_favorite(quote_id):
 @app.route("/user_quotes/<int:user_id>")
 @login_required
 def user_quotes(user_id):
-    user = User.query.get_or_404(user_id)  # Asegúrate de que el usuario exista
-    quotes = Quote.query.filter_by(user_id=user.id).all()  # Obtiene todas las citas de ese usuario
+    user = User.query.get_or_404(user_id)  
+    quotes = Quote.query.filter_by(user_id=user.id).all()  
     return render_template("user.html", user=user, quotes=quotes)
 
 
@@ -157,7 +151,6 @@ def edit_quote(quote_id):
     if request.method == 'POST':
         author = request.form['author']
         text = request.form['text']
-        # Aquí podrías añadir más validaciones si es necesario
         if len(author) < 3 or len(text) < 10:
             flash('El autor debe tener al menos 3 caracteres y la cita 10.')
             return redirect(url_for('edit_quote', quote_id=quote_id))
@@ -167,8 +160,6 @@ def edit_quote(quote_id):
         db.session.commit()
         flash('Cita actualizada con éxito.')
         return redirect(url_for('home'))
-
-    # Para GET, mostrar el formulario con la información actual de la cita
     return render_template('edit_quote.html', quote=quote)
 
 @app.route("/quote/delete/<int:quote_id>", methods=['POST'])
@@ -184,21 +175,7 @@ def delete_quote(quote_id):
     flash('Cita eliminada con éxito.')
     return redirect(url_for('home'))
 
-#Funciones de home:
-# Bienvenido {Nombre de usuario} Listo
-#Boton cerrar sesión Listo
-
-#Quotable Quotes como título
-#Veremos desplegadas como tarjetas las citas de los usuarios
-#En la tarjeta se mostrará el nombre del usuario que la creó y la cita
-
-#habrán 2 tipos de tarjetas diferentes las Quotable Quotes y las elegidas por el usuario como favoritas
-#QUEDA PENDIENTE LA FUNCIÓN DE ELIMINAR CITAS
-
-
-
-
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    app.run(host='0.0.0.0', port=8000)
