@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+
+{% block title %}Editar Cita{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Editar Cita</h2>
+    <form action="{{ url_for('edit_quote', quote_id=quote.id) }}" method="POST">
+        <div class="mb-3">
+            <label for="author" class="form-label">Autor</label>
+            <input type="text" class="form-control" id="author" name="author" placeholder="Autor" value="{{ quote.author }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="text" class="form-label">Texto de la cita</label>
+            <textarea class="form-control" id="text" name="text" placeholder="Texto de la cita" rows="3" required>{{ quote.text }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Actualizar</button>
+        <!-- Botón Cancelar -->
+        <a href="{{ url_for('home') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

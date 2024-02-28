@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+
+{% block title %}Citas de {{ user.email }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Citas de {{ user.email }}</h2>
+    <div class="row">
+        {% for quote in quotes %}
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-text">"{{ quote.text }}" - {{ quote.author }}</p>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col">
+            <p>Este usuario no ha publicado ninguna cita todavía.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

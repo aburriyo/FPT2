@@ -1,0 +1,83 @@
+{% extends 'layout.html' %}
+
+{% block title %}Página Principal{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>Bienvenido, {{ current_user.email }}</h3>
+    <hr>
+
+    <h2>Lista de Citas</h2>
+    <div class="row">
+        {% for quote in quotes %}
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-text">{{ quote.author }}: <br> "{{ quote.text }}"</p>
+                    <p class="card-text">
+                        <small class="text-muted">
+                            Creado por: <a href="{{ url_for('user_quotes', user_id=quote.user_id) }}">{{ quote.user.email }}</a>
+                        </small>
+                    </p>
+                    <!-- Botón para marcar/desmarcar como favorito -->
+                    <form action="{{ url_for('toggle_favorite', quote_id=quote.id) }}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-sm {{ 'btn-warning' if quote in current_user.favorite_quotes else 'btn-secondary' }}">{{ 'Desmarcar Favorito' if quote in current_user.favorite_quotes else 'Marcar como Favorito' }}</button>
+                    </form>
+                    {% if quote.user_id == current_user.id %}
+                        <a href="{{ url_for('edit_quote', quote_id=quote.id) }}" class="btn btn-primary btn-sm">Editar</a>
+                        <form action="{{ url_for('delete_quote', quote_id=quote.id) }}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+            <div class="col">
+                <p>No hay citas disponibles.</p>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <hr>
+    <h2>Mis Citas Favoritas</h2>
+    <div class="row">
+        {% for quote in current_user.favorite_quotes %}
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-text">{{ quote.author }}: <br> "{{ quote.text }}"</p>
+                    <p class="card-text">
+                        <small class="text-muted">
+                            Favorito marcado por ti.
+                        </small>
+                    </p>
+                    <form action="{{ url_for('toggle_favorite', quote_id=quote.id) }}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-warning btn-sm">Desmarcar Favorito</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% else %}
+            <div class="col">
+                <p>No tienes citas favoritas.</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <hr>
+    <!-- Sección para contribuir con una nueva cita -->
+    <h2>Contribuir con una nueva cita</h2>
+    <form action="{{ url_for('contribute') }}" method="POST" class="mb-3">
+        <div class="mb-3">
+            <label for="author" class="form-label">Autor</label>
+            <input type="text" class="form-control" id="author" name="author" placeholder="Autor" required>
+        </div>
+        <div class="mb-3">
+            <label for="text" class="form-label">Texto de la cita</label>
+            <textarea class="form-control" id="text" name="text" placeholder="Texto de la cita" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Enviar</button>
+    </form>
+</div>
+{% endblock %}
